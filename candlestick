@@ -1,0 +1,51 @@
+install.packages('tidyquant')
+library(tidyquant)
+
+
+AAPL1 <- tq_get("AAPL") # Dados do DF
+AAPL <- AAPL1[c((nrow(AAPL1) - 199): nrow(AAPL1)),] # Pegando os últimos 200 itens
+AAPL$date <- as.Date(AAPL$date) # Transformando date(col) do DF em DATAS
+maior <- max(AAPL$high) # Pegando o maior valor de high(col)
+menor <- min(AAPL$low) # Pegando o menor valor de low(col)
+
+x <- c(1: nrow(AAPL)) # Meu eixo x
+x_2 <- seq(1, nrow(AAPL), 4)
+coloracao <- ifelse(AAPL$close >= AAPL$open, 'green', 'red') # cor
+
+# Construindo o Gráfico - Fundo Preto
+png('GráficodeVela-preto.png', res = 500, height = 5000, width = 9000, 
+    bg = 'black') # Nome e Tamanho
+par(mar=c(7, 3, 3, 3))  # Definindo as Margens
+plot(AAPL$high, main = 'Preço X', xaxt='n', xlab='', ylab='Preço', 
+     ylim=c(menor, maior), type='n',  # Nome do Gráfico, Eixo Y
+     col.axis = 'white') 
+par(new = T)
+plot(AAPL$low, main='', axes=F, xlab='', ylab='',
+     ylim=c(menor, maior), type='n', 
+     col.axis = 'white') # Escalas do GRáfico - low de Base
+box(col = 'white') # cor das linhas 
+segments(x0 = x, y0 = AAPL$open, x1 = x, y1 = AAPL$close, col = coloracao,
+         lwd = 4) # Desenhando as Velas, com base em open e close, mais gordinha
+segments(x0 = x, y0 = AAPL$low, x1 = x, y1 = AAPL$high, col = coloracao,
+         lwd = 1) # Desenhando as linhas, com base em low e high, mais magrinha
+axis(1, at=x_2, labels = AAPL$date[x_2], las=2,  # Definindo o Eixo X
+     col = 'white', col.axis = 'white', col.ticks = 'white') # Cor Eixo X
+axis(2, col = 'white', 
+     col.axis = 'white', col.ticks = 'white') # Cor do Eixo Y 
+dev.off()
+
+# Construindo o Gráfico - Fundo Branco
+png('GráficodeVela-branco.png', res = 500, height = 5000, 
+    width = 9000) # Nome e Tamanho
+par(mar=c(7, 3, 3, 3))  # Definindo as Margens
+plot(AAPL$high, main = 'Preço X', xaxt='n', xlab='', ylab='Preço', 
+     ylim=c(menor, maior), type='n') # Nome do Gráfico, Eixo Y
+par(new = T)
+plot(AAPL$low, main='', axes=F, xlab='', ylab='',
+     ylim=c(menor, maior), type='n') # Escalas do GRáfico - low de Base
+segments(x0 = x, y0 = AAPL$open, x1 = x, y1 = AAPL$close, col = coloracao,
+         lwd = 4) # Desenhando as Velas, com base em open e close, mais gordinha
+segments(x0 = x, y0 = AAPL$low, x1 = x, y1 = AAPL$high, col = coloracao,
+         lwd = 1) # Desenhando as linhas, com base em low e high, mais magrinha
+axis(1, at=x_2, labels = AAPL$date[x_2], las=2) # Definindo o Eixo X)
+dev.off()
